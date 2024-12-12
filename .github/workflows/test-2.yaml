@@ -27,14 +27,14 @@ jobs:
       - name: Build the application
         run: dotnet build --configuration Release
 
-      - name: Run tests (optional)
+      - name: Run tests
         run: dotnet test
 
-      - name: Run the application (optional)
+      - name: Run the application
         run: dotnet run
 
-      - name: Pack the application
-        run: dotnet pack --configuration Release --output ./output
+      - name: Publish the application
+        run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
     
       - name: List contents of output directory
         run: ls -l ./output
