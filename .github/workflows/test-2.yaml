@@ -55,22 +55,17 @@ jobs:
     #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: Publish to Nexus using Maven
-        run: |
-          mvn deploy:deploy-file \
-            -DrepositoryId=nexus \
-            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/ \
-            -Dfile=./output/netapplication.1.0.0.nupkg \
-            -Dpackaging=nupkg \
-            -DgroupId=com.example \
-            -DartifactId=netapplication \
-            -Dversion=1.0.0
-        env:
-          MAVEN_OPTS: "-Xmx1024m"
-          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      - name: Upload Artifact to Nexus
+        uses: sonatype/nexus-cli-action@v1
+        with:
+          nexus-url: http://faraztest.southeastasia.cloudapp.azure.com:8081
+          username: ${{ secrets.NEXUS_USERNAME }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
+          artifact-path: ./output/netapplication.1.0.0.nupkg
+          repository: faraz_repo
+          artifact-name: netapplication
+          artifact-version: 1.0.0
 
-      
 
     #   - name: Publish to Nexus Repository using dll
     #     run: |
