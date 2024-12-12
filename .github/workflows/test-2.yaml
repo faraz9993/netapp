@@ -33,16 +33,16 @@ jobs:
       - name: Run the application
         run: dotnet run
       
-      - name: Pack the application
+      - name: Pack the application for nupkg
         run: dotnet pack --configuration Release --output ./output
 
-    #   - name: Publish the application
+    #   - name: Publish the application for dll
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
     
       - name: List contents of output directory
         run: ls -l ./output
           
-      - name: Publish to Nexus Repository
+      - name: Publish to Nexus Repository using nupkg
         run: |
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
             -X POST \
@@ -56,7 +56,7 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       
 
-    #   - name: Publish to Nexus Repository
+    #   - name: Publish to Nexus Repository using dll
     #     run: |
     #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
     #         -X POST \
@@ -69,8 +69,16 @@ jobs:
     #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: Upload DLL as Artifact (Optional)
+    #   - name: Upload DLL as Artifact
+    #     uses: actions/upload-artifact@v3
+    #     with:
+    #       name: netapplication-dll
+    #       path: ./output/netapplication.dll
+
+      - name: Upload NuGet package as Artifact (Optional)
         uses: actions/upload-artifact@v3
         with:
-          name: netapplication-dll
-          path: ./output/netapplication.dll
+          name: netapplication-nupkg
+          path: ./output/netapplication.1.0.0.nupkg
+          if-no-files-found: warn
+          include-hidden-files: false
