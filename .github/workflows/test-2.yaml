@@ -80,7 +80,7 @@ jobs:
           nexus_password: ${{ secrets.NEXUS_PASSWORD }} # Repository secret
           nexus_repository: faraz_repo
           upload_directory: files
-          filename_suffix: .txt # Optionally matches files with text as suffix
+          filename_suffix: .nupkg # Optionally matches files with text as suffix
           testing: true # Optionally creates upload directory and file
           # Not implemented
           # repository_format: raw
