@@ -55,7 +55,20 @@ jobs:
     #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: Push to Nexus Repository (Branch)
+      - name: Create NuGet.Config
+        run: |
+          mkdir -p ~/.nuget
+          echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+          <configuration>
+            <packageSources>
+              <add key=\"NexusRepo\" value=\"http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo\" />
+            </packageSources>
+            <config>
+              <add key=\"allowInsecureConnections\" value=\"true\" />
+            </config>
+          </configuration>" > ~/.nuget/NuGet.Config
+  
+      - name: Push to Nexus Repository
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
