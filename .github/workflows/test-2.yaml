@@ -57,9 +57,8 @@ jobs:
 
       - name: Publish to Nexus using Maven
         run: |
-          mvn deploy:deploy-file \
-            -DrepositoryId=nexus \
-            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/ \
+          mvn deploy \
+            -DaltDeploymentRepository=faraz-repo::default::http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/ \
             -Dfile=./output/netapplication.1.0.0.nupkg \
             -Dpackaging=nupkg \
             -DgroupId=com.example \
