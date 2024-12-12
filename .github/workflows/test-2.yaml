@@ -62,9 +62,9 @@ jobs:
             -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/ \
             -Dfile=./output/netapplication.1.0.0.nupkg \
             -Dpackaging=nupkg \
-            # -DgroupId=com.example \
-            # -DartifactId=netapplication \
-            # -Dversion=1.0.0
+            -DgroupId=com.example \
+            -DartifactId=netapplication \
+            -Dversion=1.0.0
         env:
           MAVEN_OPTS: "-Xmx1024m"
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
