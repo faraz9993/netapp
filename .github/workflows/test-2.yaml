@@ -58,13 +58,14 @@ jobs:
       - name: Publish to Nexus using Maven
         run: |
           mvn deploy:deploy-file \
-            -DrepositoryId=nexus \
-            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll \
-            -Dfile=./output/netapplication.1.0.0.nupkg \
-            -Dpackaging=nupkg \
+            -Dfile=./output/netapplication-1.0.0.nupkg \
             -DgroupId=com.example \
             -DartifactId=netapplication \
-            -Dversion=1.0.0
+            -Dversion=1.0.0 \
+            -Dpackaging=nupkg \
+            -DrepositoryId=nexus-repo \
+            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-hosted/
+
         env:
           MAVEN_OPTS: "-Xmx1024m"
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
