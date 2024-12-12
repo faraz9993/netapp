@@ -79,8 +79,8 @@ jobs:
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }} # Repository secret
           nexus_repository: faraz_repo
-          upload_directory: files
-          filename_suffix: .nupkg # Optionally matches files with text as suffix
+          upload_directory: ./output
+          filename_suffix: netapplication.1.0.0.nupkg # Optionally matches files with text as suffix
           testing: true # Optionally creates upload directory and file
           # Not implemented
           # repository_format: raw
