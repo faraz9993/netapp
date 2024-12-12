@@ -48,12 +48,13 @@ jobs:
             -X POST \
             -F "r=releases" \
             -F "hasPom=false" \
-            -F "e=nupkg" \  # Use 'nupkg' for NuGet packages
+            -F "e=nupkg" \
             -F "file=@./output/netapplication.1.0.0.nupkg" \
             "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      
 
     #   - name: Publish to Nexus Repository
     #     run: |
