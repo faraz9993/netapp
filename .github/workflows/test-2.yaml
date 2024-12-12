@@ -39,22 +39,37 @@ jobs:
     #   - name: Publish the application for dll
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
     
-      - name: List contents of output directory
-        run: ls -l ./output
+    #   - name: List contents of output directory
+    #     run: ls -l ./output
           
-      - name: Publish to Nexus Repository using nupkg
+    #   - name: Publish to Nexus Repository using nupkg
+    #     run: |
+    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+    #         -X POST \
+    #         -F "r=releases" \
+    #         -F "hasPom=false" \
+    #         -F "e=nupkg" \
+    #         -F "file=@./output/netapplication.1.0.0.nupkg" \
+    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
+    #     env:
+    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Publish to Nexus using Maven
         run: |
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-            -X POST \
-            -F "r=releases" \
-            -F "hasPom=false" \
-            -F "e=nupkg" \
-            -F "file=@./output/netapplication.1.0.0.nupkg" \
-            -F --upload-file ./output/netapplication.1.0.0.nupkg
-            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
+          mvn deploy:deploy-file \
+            -DrepositoryId=nexus \
+            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/ \
+            -Dfile=./output/netapplication.1.0.0.nupkg \
+            -Dpackaging=nupkg \
+            -DgroupId=com.example \
+            -DartifactId=netapplication \
+            -Dversion=1.0.0
         env:
-          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          MAVEN_OPTS: "-Xmx1024m"
+          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
       
 
     #   - name: Publish to Nexus Repository using dll
