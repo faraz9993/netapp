@@ -44,10 +44,11 @@ jobs:
             -F "hasPom=false" \  # Set true if uploading a .pom file
             -F "e=jar" \  # Set this to the appropriate extension (e.g., jar, dll, etc.)
             -F "file=@./output/netapplication.dll" \  # Path to the DLL file
-            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll"
+            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/"
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      
 
       - name: Upload DLL as Artifact (Optional)
         uses: actions/upload-artifact@v3
