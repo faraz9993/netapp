@@ -75,8 +75,8 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo
         run: |
-          dotnet nuget push ./output/*.nupkg --source NexusRepo --api-key $NEXUS_API_KEY
-          
+          dotnet nuget push ./output/*.nupkg --source http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo --api-key $NEXUS_API_KEY
+
     #   - name: Publish to Nexus Repository using dll
     #     run: |
     #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
