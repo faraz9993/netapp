@@ -1,0 +1,56 @@
+name: .NET Core CI-2
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0'
+
+      - name: Restore dependencies
+        run: dotnet restore netapplication.csproj
+
+      - name: Build the application
+        run: dotnet build --configuration Release
+
+      - name: Run tests (optional)
+        run: dotnet test
+
+      - name: Run the application (optional)
+        run: dotnet run
+
+      - name: Pack the application
+        run: dotnet pack --configuration Release --output ./output
+          
+      - name: Publish to Nexus Repository
+        run: |
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+            -X POST \
+            -F "r=releases" \  # Repository name in Nexus
+            -F "hasPom=false" \  # Set true if uploading a .pom file
+            -F "e=jar" \  # Set this to the appropriate extension (e.g., jar, dll, etc.)
+            -F "file=@./output/netapplication.dll" \  # Path to the DLL file
+            "https://your-nexus-repository-url/repository/your-repository-name/netapplication.dll"
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Upload DLL as Artifact (Optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: netapplication-dll
+          path: ./output/netapplication.dll
