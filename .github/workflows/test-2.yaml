@@ -32,9 +32,12 @@ jobs:
 
       - name: Run the application
         run: dotnet run
+      
+      - name: Pack the application
+        run: dotnet pack --configuration Release --output ./output
 
-      - name: Publish the application
-        run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
+    #   - name: Publish the application
+    #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
     
       - name: List contents of output directory
         run: ls -l ./output
@@ -45,12 +48,25 @@ jobs:
             -X POST \
             -F "r=releases" \
             -F "hasPom=false" \
-            -F "e=jar" \
-            -F "file=@./output/netapplication.dll" \
-            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll"
+            -F "e=nupkg" \  # Use 'nupkg' for NuGet packages
+            -F "file=@./output/netapplication.1.0.0.nupkg" \
+            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
+    #   - name: Publish to Nexus Repository
+    #     run: |
+    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+    #         -X POST \
+    #         -F "r=releases" \
+    #         -F "hasPom=false" \
+    #         -F "e=jar" \
+    #         -F "file=@./output/netapplication.dll" \
+    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll"
+    #     env:
+    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Upload DLL as Artifact (Optional)
         uses: actions/upload-artifact@v3
