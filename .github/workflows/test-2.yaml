@@ -40,11 +40,11 @@ jobs:
         run: |
           curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
             -X POST \
-            -F "r=releases" \  # Repository name in Nexus
-            -F "hasPom=false" \  # Set true if uploading a .pom file
-            -F "e=jar" \  # Set this to the appropriate extension (e.g., jar, dll, etc.)
-            -F "file=@./output/netapplication.dll" \  # Path to the DLL file
-            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/"
+            -F "r=releases" \
+            -F "hasPom=false" \
+            -F "e=jar" \
+            -F "file=@./output/netapplication.dll" \
+            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll"
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
