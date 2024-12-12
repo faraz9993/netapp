@@ -19,10 +19,10 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0'  # Use the version you're working with (adjust as needed)
+          dotnet-version: '9.0'
 
-      - name: Restore dependencies
-        run: dotnet restore
+#      - name: Restore dependencies
+#        run: dotnet restore
 
       - name: Build the application
         run: dotnet build --configuration Release
@@ -32,4 +32,3 @@ jobs:
 
       - name: Run the application
         run: dotnet run
-
