@@ -50,7 +50,7 @@ jobs:
             -F "hasPom=false" \
             -F "e=nupkg" \
             -F "file=@./output/netapplication.1.0.0.nupkg" \
-            --upload-file ./output/netapplication.1.0.0.nupkg
+            -F --upload-file ./output/netapplication.1.0.0.nupkg
             "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
