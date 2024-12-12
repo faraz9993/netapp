@@ -75,7 +75,7 @@ jobs:
         # ToDo: change/update the line below when testing is completed
         uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
         with:
-          nexus_server: faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo
+          nexus_server: faraztest.southeastasia.cloudapp.azure.com:8081
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}
           nexus_repository: faraz_repo
