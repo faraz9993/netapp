@@ -55,23 +55,36 @@ jobs:
     #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: Publish to Nexus using Maven
-        run: |
-          mvn deploy:deploy-file \
-            -Dfile=./output/netapplication-1.0.0.nupkg \
-            -DgroupId=com.example \
-            -DartifactId=netapplication \
-            -Dversion=1.0.0 \
-            -Dpackaging=nupkg \
-            -DrepositoryId=nexus-repo \
-            -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-hosted/
+    #   - name: Publish to Nexus using Maven
+    #     run: |
+    #       mvn deploy:deploy-file \
+    #         -Dfile=./output/netapplication-1.0.0.nupkg \
+    #         -DgroupId=com.example \
+    #         -DartifactId=netapplication \
+    #         -Dversion=1.0.0 \
+    #         -Dpackaging=nupkg \
+    #         -DrepositoryId=nexus-repo \
+    #         -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-hosted/
+    #     env:
+    #       MAVEN_OPTS: "-Xmx1024m"
+    #       MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+    #       MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-        env:
-          MAVEN_OPTS: "-Xmx1024m"
-          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      - name: "Upload test file to Nexus"
+        id: nexus-upload
+        # ToDo: change/update the line below when testing is completed
+        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
+        with:
+          nexus_server: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/
+          nexus_username: ${{ secrets.NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.NEXUS_PASSWORD }} # Repository secret
+          nexus_repository: faraz_repo
+          upload_directory: files
+          filename_suffix: .txt # Optionally matches files with text as suffix
+          testing: true # Optionally creates upload directory and file
+          # Not implemented
+          # repository_format: raw
   
-
 
     #   - name: Publish to Nexus Repository using dll
     #     run: |
