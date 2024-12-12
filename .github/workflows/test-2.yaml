@@ -70,19 +70,18 @@ jobs:
     #       MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     #       MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: "Upload test file to Nexus"
-        id: nexus-upload
-        # ToDo: change/update the line below when testing is completed
-        uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
-        with:
-          nexus_server: faraztest.southeastasia.cloudapp.azure.com:8081
-          nexus_username: ${{ secrets.NEXUS_USERNAME }}
-          nexus_password: ${{ secrets.NEXUS_PASSWORD }}
-          nexus_repository: faraz_repo
-          upload_directory: ./output
-          filename_suffix: netapplication.1.0.0.nupkg
-          testing: true 
-  
+    #   - name: "Upload test file to Nexus"
+    #     id: nexus-upload
+    #     # ToDo: change/update the line below when testing is completed
+    #     uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
+    #     with:
+    #       nexus_server: faraztest.southeastasia.cloudapp.azure.com:8081
+    #       nexus_username: ${{ secrets.NEXUS_USERNAME }}
+    #       nexus_password: ${{ secrets.NEXUS_PASSWORD }}
+    #       nexus_repository: faraz_repo
+    #       upload_directory: ./output
+    #       filename_suffix: netapplication.1.0.0.nupkg
+    #       testing: true 
 
     #   - name: Publish to Nexus Repository using dll
     #     run: |
@@ -102,6 +101,12 @@ jobs:
     #     with:
     #       name: netapplication-dll
     #       path: ./output/netapplication.dll
+
+      - name: Deploy to Nexus Repository
+        run: mvn deploy -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Upload NuGet package as Artifact (Optional)
         uses: actions/upload-artifact@v3
