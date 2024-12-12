@@ -42,46 +42,26 @@ jobs:
       - name: List contents of output directory
         run: ls -l ./output
           
-      - name: Publish to Nexus Repository using nupkg
-        run: |
-          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-            -X POST \
-            -F "r=releases" \
-            -F "hasPom=false" \
-            -F "e=nupkg" \
-            -F "file=@./output/netapplication.1.0.0.nupkg" \
-            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
+    #   - name: Publish to Nexus Repository using nupkg
+    #     run: |
+    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+    #         -X POST \
+    #         -F "r=releases" \
+    #         -F "hasPom=false" \
+    #         -F "e=nupkg" \
+    #         -F "file=@./output/netapplication.1.0.0.nupkg" \
+    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
+    #     env:
+    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Push to Nexus Repository (Branch)
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
-    #   - name: Publish to Nexus using Maven
-    #     run: |
-    #       mvn deploy:deploy-file \
-    #         -Dfile=./output/netapplication-1.0.0.nupkg \
-    #         -DgroupId=com.example \
-    #         -DartifactId=netapplication \
-    #         -Dversion=1.0.0 \
-    #         -Dpackaging=nupkg \
-    #         -DrepositoryId=nexus-repo \
-    #         -Durl=http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-hosted/
-    #     env:
-    #       MAVEN_OPTS: "-Xmx1024m"
-    #       MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-    #       MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
-    #   - name: "Upload test file to Nexus"
-    #     id: nexus-upload
-    #     # ToDo: change/update the line below when testing is completed
-    #     uses: ModeSevenIndustrialSolutions/nexus-upload-action@v0.1.8
-    #     with:
-    #       nexus_server: faraztest.southeastasia.cloudapp.azure.com:8081
-    #       nexus_username: ${{ secrets.NEXUS_USERNAME }}
-    #       nexus_password: ${{ secrets.NEXUS_PASSWORD }}
-    #       nexus_repository: faraz_repo
-    #       upload_directory: ./output
-    #       filename_suffix: netapplication.1.0.0.nupkg
-    #       testing: true 
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+        run: |
+          dotnet nuget push ./bin/Release/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
     #   - name: Publish to Nexus Repository using dll
     #     run: |
