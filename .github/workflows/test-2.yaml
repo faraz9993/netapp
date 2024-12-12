@@ -35,6 +35,9 @@ jobs:
 
       - name: Pack the application
         run: dotnet pack --configuration Release --output ./output
+    
+      - name: List contents of output directory
+        run: ls -l ./output
           
       - name: Publish to Nexus Repository
         run: |
