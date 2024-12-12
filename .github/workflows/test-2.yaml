@@ -42,18 +42,18 @@ jobs:
       - name: List contents of output directory
         run: ls -l ./output
           
-    #   - name: Publish to Nexus Repository using nupkg
-    #     run: |
-    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-    #         -X POST \
-    #         -F "r=releases" \
-    #         -F "hasPom=false" \
-    #         -F "e=nupkg" \
-    #         -F "file=@./output/netapplication.1.0.0.nupkg" \
-    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
-    #     env:
-    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      - name: Publish to Nexus Repository using nupkg
+        run: |
+          curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
+            -X POST \
+            -F "r=releases" \
+            -F "hasPom=false" \
+            -F "e=nupkg" \
+            -F "file=@./output/netapplication.1.0.0.nupkg" \
+            "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
     #   - name: Publish to Nexus using Maven
     #     run: |
@@ -101,17 +101,3 @@ jobs:
     #     with:
     #       name: netapplication-dll
     #       path: ./output/netapplication.dll
-
-      - name: Deploy to Nexus Repository
-        run: mvn deploy -DskipTests
-        env:
-          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
-      - name: Upload NuGet package as Artifact (Optional)
-        uses: actions/upload-artifact@v3
-        with:
-          name: netapplication-nupkg
-          path: ./output/netapplication.1.0.0.nupkg
-          if-no-files-found: warn
-          include-hidden-files: false
