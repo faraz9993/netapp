@@ -49,6 +49,7 @@ jobs:
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
       
       - name: Push to Nuget-snapshot Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'dev'
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -58,6 +59,7 @@ jobs:
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
       - name: Push to Nuget-rc Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'release'
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
