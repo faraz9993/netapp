@@ -2,11 +2,9 @@ name: Main Workflow
 
 on:
   push:
-    branches:
-      - dev
-      - release
-    tags:
-        - main
+    branches: [ "dev", "release"]
+    tags: 
+      - "*"
 
 jobs:
   build:
@@ -40,7 +38,8 @@ jobs:
         run: ls -l ./output
           
   
-      - name: Push to Nuget-tag Repository of Nexus 
+      - name: Push to Nuget-tag Repository of Nexus
+        if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/') && github.event.pusher.branch == 'main'
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
