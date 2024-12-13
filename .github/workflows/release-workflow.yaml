@@ -1,4 +1,4 @@
-name: .NET Core CI-2
+name: Rel;ease Workflow
 
 on:
   push:
