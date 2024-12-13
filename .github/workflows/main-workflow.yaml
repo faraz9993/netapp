@@ -1,0 +1,69 @@
+name: Main Workflow
+
+on:
+  push:
+    branches: [ "dev", "release"]
+    tags: "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      - name: Restore dependencies
+        run: dotnet restore netapplication.csproj
+
+      - name: Build the application
+        run: dotnet build --configuration Release
+
+      - name: Run the application
+        run: dotnet run
+      
+      - name: Pack the application for "nupkg"
+        run: dotnet pack --configuration Release --output ./output
+
+    #   - name: Publish the application for "dll"
+    #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
+    
+      - name: List contents of output directory
+        run: ls -l ./output
+          
+  
+      - name: Push to Nuget-tag Repository of Nexus
+      #  if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/') && github.event.pusher.branch == 'main'
+        if: github.ref_type == 'tag' && github.event.pusher.branch == 'main'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
+      
+      - name: Push to Nuget-snapshot Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'dev'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+
+      - name: Push to Nuget-rc Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'release'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
