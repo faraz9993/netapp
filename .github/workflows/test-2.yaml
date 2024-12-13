@@ -42,45 +42,29 @@ jobs:
       - name: List contents of output directory
         run: ls -l ./output
           
-    #   - name: Publish to Nexus Repository using nupkg
-    #     run: |
-    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-    #         -X POST \
-    #         -F "r=releases" \
-    #         -F "hasPom=false" \
-    #         -F "e=nupkg" \
-    #         -F "file=@./output/netapplication.1.0.0.nupkg" \
-    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.1.0.0.nupkg"
-    #     env:
-    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   
       - name: Push to Nexus Repository
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/
+          NEXUS_SOURCE: https://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/
         run: |
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
           
-          
-          
-      # --no-service-endpoint
+      - name: Upload Package as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-package
+          path: ${{ env.ARTIFACT_PATH }}
+      
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          path: ./bin/Release
 
 
-    #   - name: Publish to Nexus Repository using dll
-    #     run: |
-    #       curl -u ${{ secrets.NEXUS_USERNAME }}:${{ secrets.NEXUS_PASSWORD }} \
-    #         -X POST \
-    #         -F "r=releases" \
-    #         -F "hasPom=false" \
-    #         -F "e=jar" \
-    #         -F "file=@./output/netapplication.dll" \
-    #         "http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/netapplication.dll"
-    #     env:
-    #       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-    #       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
     #   - name: Upload DLL as Artifact
     #     uses: actions/upload-artifact@v3
