@@ -3,10 +3,10 @@ name: .NET Core CI-2
 on:
   push:
     branches:
-      - release
+      - dev
   pull_request:
     branches:
-      - release
+      - dev
 
 jobs:
   build:
