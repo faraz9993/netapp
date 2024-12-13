@@ -51,23 +51,3 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/
         run: |
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
-          
-      # - name: Upload Package as Artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: nuget-package
-      #     path: ${{ env.ARTIFACT_PATH }}
-      
-      # - name: Download Package Artifact
-      #   uses: actions/download-artifact@v3 
-      #   with:
-      #     name: nuget-package
-      #     path: ./bin/Release
-
-
-
-    #   - name: Upload DLL as Artifact
-    #     uses: actions/upload-artifact@v3
-    #     with:
-    #       name: netapplication-dll
-    #       path: ./output/netapplication.dll
