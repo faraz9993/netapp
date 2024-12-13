@@ -37,7 +37,7 @@ jobs:
         run: dotnet pack --configuration Release --output ./output
 
     #   - name: Publish the application for dll
-    #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained false
+    #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained false_t
     
       - name: List contents of output directory
         run: ls -l ./output
