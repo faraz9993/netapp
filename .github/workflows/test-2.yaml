@@ -52,17 +52,17 @@ jobs:
         run: |
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
           
-      - name: Upload Package as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: nuget-package
-          path: ${{ env.ARTIFACT_PATH }}
+      # - name: Upload Package as Artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: nuget-package
+      #     path: ${{ env.ARTIFACT_PATH }}
       
-      - name: Download Package Artifact
-        uses: actions/download-artifact@v3 
-        with:
-          name: nuget-package
-          path: ./bin/Release
+      # - name: Download Package Artifact
+      #   uses: actions/download-artifact@v3 
+      #   with:
+      #     name: nuget-package
+      #     path: ./bin/Release
 
 
 
