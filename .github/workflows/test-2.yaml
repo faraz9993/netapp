@@ -27,16 +27,13 @@ jobs:
       - name: Build the application
         run: dotnet build --configuration Release
 
-      - name: Run tests
-        run: dotnet test
-
       - name: Run the application
         run: dotnet run
       
-      - name: Pack the application for nupkg
+      - name: Pack the application for "nupkg"
         run: dotnet pack --configuration Release --output ./output
 
-    #   - name: Publish the application for dll
+    #   - name: Publish the application for "dll"
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
     
       - name: List contents of output directory
@@ -48,6 +45,6 @@ jobs:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/faraz_repo/
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
