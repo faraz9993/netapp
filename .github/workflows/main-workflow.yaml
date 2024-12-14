@@ -28,7 +28,7 @@ jobs:
         run: dotnet run
 
       - name: Pack the application for "nupkg"
-        run: dotnet pack --configuration Release --output ./output
+        run: dotnet pack netapplication.csproj --configuration Release --output ./output
 
     #   - name: Publish the application for "dll"
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
