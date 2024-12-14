@@ -57,7 +57,7 @@ jobs:
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
   
       - name: Push to Nuget-tag Repository of Nexus
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref_name == 'refs/heads/main' }}
 #        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
