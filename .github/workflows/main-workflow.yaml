@@ -2,12 +2,14 @@ name: Main Workflow
 
 on:
   push:
+    # Trigger on any push to dev or release branches
     branches:
       - "dev"
       - "release"
+    # Trigger on tag pushes (for all branches, including main)
     tags:
       - "*"
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +31,7 @@ jobs:
 
       - name: Run the application
         run: dotnet run
-      
+
       - name: Pack the application for "nupkg"
         run: dotnet pack --configuration Release --output ./output
 
