@@ -2,13 +2,8 @@ name: Main Workflow
 
 on:
   push:
-    # Trigger on any push to dev or release branches
-    branches:
-      - "dev"
-      - "release"
-    # Trigger on tag pushes (for all branches, including main)
-    tags:
-      - "*"
+    branches: ["dev", "release"]
+    tags: "*"
 
 jobs:
   build:
