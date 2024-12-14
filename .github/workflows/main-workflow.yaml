@@ -37,7 +37,6 @@ jobs:
         run: ls -l ./output
           
       - name: Push to Nuget-tag Repository of Nexus
-#        if: github.ref_name == 'main' && startsWith(github.ref, 'refs/tags/')
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -45,9 +44,12 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+            if [[ "$BRANCH_NAME" == "main" ]]; then
+              dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            fi
           fi
-
+          
       - name: Push to Nuget-snapshot Repository of Nexus
         if: github.ref_type == 'push' && github.event.pusher.branch == 'dev'
         env:
