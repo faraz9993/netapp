@@ -22,7 +22,7 @@ jobs:
         run: dotnet restore netapplication.csproj
 
       - name: Build the application
-        run: dotnet build --configuration Release
+        run: dotnet build netapplication.csproj --configuration Release
 
       - name: Run the application
         run: dotnet run
