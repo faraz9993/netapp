@@ -1,183 +1,66 @@
-name: CI/CD Workflow
+name: Main Workflow
 
 on:
   push:
-    branches:
-      - develop
-      - release
-    tags:
-      - '*'
-
-env:
-  PROJECT_PATH: '**/*.csproj'
-  PACKAGE_OUTPUT_DIR: './bin/Release'
-  PACKAGE_ID: ""
-  PACKAGE_VERSION: ""
-  ARTIFACT_PATH: ""
+    branches: ["dev", "release"]
+    tags: "*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: 
-      image: mcr.microsoft.com/dotnet/sdk:8.0
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Restore packages
-      run: dotnet restore 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
 
-    - name: Build project
-      run: dotnet build --no-restore --configuration Release
+      - name: Restore dependencies
+        run: dotnet restore netapplication.csproj
 
-    - name: Set package name and version
-      id: set_name
-      shell: bash
-      run: |
-        echo "Checking GITHUB_REF: $GITHUB_REF"
-        git config --global --add safe.directory /__w/git-nexus-task/git-nexus-task
-        FOLDER_NAME="helloworld"
+      - name: Build the application
+        run: dotnet build --configuration Release
 
-        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          git fetch --unshallow || true
-          MAIN_COMMIT=$(git rev-parse origin/main)
-          TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
+      - name: Run the application
+        run: dotnet run
 
-          if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-            export PACKAGE_ID="${FOLDER_NAME}-${TAG_NAME}"
-            export PACKAGE_VERSION="${TAG_NAME}"
-          else
-            echo "Error: Tags must be created on the main."
-            exit 1
-          fi
-        elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-          export PACKAGE_ID="${FOLDER_NAME}"
-          export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
-        elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-          COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
-          export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
-          export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-        else
-          echo "Error: Unsupported branch/tag for setting package name/version."
-          exit 1
-        fi
+      - name: Pack the application for "nupkg"
+        run: dotnet pack --configuration Release --output ./output
 
-        echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-        echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-        echo "PACKAGE_ID: $PACKAGE_ID"
-        echo "PACKAGE_VERSION: $PACKAGE_VERSION"
-
-        
-
-    - name: Pack packages
-      run: |
-        dotnet pack --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIR }} \
-          /p:CustomPackageId=$PACKAGE_ID \
-          /p:PackageVersion=$PACKAGE_VERSION
-        ARTIFACT_PATH="${{ env.PACKAGE_OUTPUT_DIR }}/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
-        echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
-        echo "Packaging completed. Artifact path: $ARTIFACT_PATH"
-
-
-    - name: Upload Package as Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-package
-        path: ${{ env.ARTIFACT_PATH }}
-
-  sonarcloud:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: SonaCloud Scan
-      id: sonar_scan
-      uses: ./.github/actions/ 
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        sonar_token: ${{ secrets.SONAR_TOKEN }}
-
-    - name: SonarQube Quality Gate check
-      id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@master
-      with:
-        pollingTimeoutSec: 600
-        scanMetadataReportFile: .sonarqube/out/.sonar/report-task.txt
-      env:
-       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        
-  
-    - name: Assign Quality Gate Status to variable
-      run: |
-        QUALITY_GATE_STATUS="${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
-        echo "QUALITY_GATE_STATUS=${QUALITY_GATE_STATUS}" >> $GITHUB_ENV
-        echo "The Quality Gate status is $QUALITY_GATE_STATUS"
-
-    - name: Check if Quality Gate Passed
-      run: |
-        if [[ "${QUALITY_GATE_STATUS}" != "PASSED" ]]; then
-          echo "Quality Gate failed with status: $QUALITY_GATE_STATUS"
-          exit 1  
-        else
-          echo "Quality Gate passed with status: $QUALITY_GATE_STATUS"
-        fi
- 
-    - name: "Example show SonarQube Quality Gate Status value"
-      run: echo "The Quality Gate status is $QUALITY_GATE_STATUS"
-
-    # - name: Manual Approval
-    #   uses: trstringer/manual-approval@v1
-    #   with:
-    #     secret: 
-    #     approvers: palash1504
-    #     minimum-approvals: 1
-    #     issue-title: "pushing to nexus"
-    #     issue-body: "Please approve or deny the pushing to nexus"
-    #     exclude-workflow-initiator-as-approver: false
-    #     additional-approved-words: ''
-    #     additional-denied-words: '' 
-
-
-  push_to_nexus:
-    runs-on: ubuntu-latest
-    needs: sonarcloud
-    if: github.ref_name == 'develop' || github.ref_name == 'release' || startsWith(github.ref, 'refs/tags/')
-    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
-    steps:
-    - name: Download Package Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-package
-        path: ./bin/Release
-
-    - name: List files in Release directory
-      run: ls -al ./bin/Release
-
-    - name: Push to Nexus Repository
-      env:
-        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }} 
-        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-        NEXUS_URL_DEVELOP: ${{ vars.NEXUS_URL_DEVELOP }}
-        NEXUS_URL_MAIN: ${{ vars.NEXUS_URL_MAIN }}
-        NEXUS_URL_RELEASE: ${{ vars.NEXUS_URL_RELEASE }}
-
-
-      run: |
-        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-          NEXUS_SOURCE=${{ env.NEXUS_URL_MAIN }}
-        elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-          NEXUS_SOURCE="${{ env.NEXUS_URL_DEVELOP }}"
-        elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-          NEXUS_SOURCE="${{ env.NEXUS_URL_RELEASE }}"
-        else
-          echo "Error: Unsupported branch/tag for Nexus deployment."
-          exit 1
-        fi
-        echo "Pushing to Nexus repository: $NEXUS_SOURCE"
-        dotnet nuget push ./bin/Release/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
- 
+    #   - name: Publish the application for "dll"
+    #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
+    
+      - name: List contents of output directory
+        run: ls -l ./output
+          
+      - name: Push to Nuget-tag Repository of Nexus
+        if: github.ref_type == 'tag' && github.event.pusher.branch == 'main'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY 
+      
+      - name: Push to Nuget-snapshot Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'dev'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+      - name: Push to Nuget-rc Repository of Nexus
+        if: github.ref_type == 'push' && github.event.pusher.branch == 'release'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
+        run: |
+          dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
