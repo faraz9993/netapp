@@ -79,7 +79,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
 
         run: |
+          ls -l ./output
           cd ./output
           mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-          ls -l ./output
           dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
