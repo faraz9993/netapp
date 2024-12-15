@@ -33,6 +33,9 @@ jobs:
       - name: Pack the NuGet package
         run: |
           VERSION=${{ github.ref_name }}
+          VERSION=${VERSION#1.0.0-v}
+          echo "Using version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output       
 
     #   - name: Publish the application for "dll"
