@@ -74,4 +74,4 @@ jobs:
         #       dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
           VERSION=${GITHUB_REF##*/}  # Extract version again if necessary
-          dotnet nuget push .output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
