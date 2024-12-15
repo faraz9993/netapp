@@ -74,6 +74,4 @@ jobs:
         #       dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
           VERSION=${GITHUB_REF##*/}  # Extract version again if necessary
-          dotnet nuget push bin/Release/netstandard2.0/netapplication.$VERSION.nupkg \
-            --source "https://your-nexus-repo-url" \
-            --api-key ${{ secrets.NEXUS_API_KEY }}
+          dotnet nuget push bin/Release/netstandard2.0/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
