@@ -3,7 +3,7 @@ name: Main Workflow
 on:
   push:
     branches: ["dev", "release"]
-    tags: "*"
+    tags: ["main"]
 
 jobs:
   build:
@@ -32,21 +32,14 @@ jobs:
       - name: Run the application
         run: dotnet run
 
- #     - name: Pack the application for "nupkg"
- #       run: dotnet pack netapplication.csproj --configuration Release --output ./output
-
       - name: Pack the NuGet package
         run: |
           VERSION=${{ github.ref_name }}
           dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output       
-
- #     - name: Publish the application for "dll"
- #       run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
     
       - name: List contents of output directory
         run: |
              ls -l ./output 
-             
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref == 'refs/heads/dev' }}
