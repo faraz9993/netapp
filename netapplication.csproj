@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
     <PackageId>$(CustomPackageId)</PackageId>
-    <Version>$(PackageVersion)</Version>
+    <Version></Version>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
