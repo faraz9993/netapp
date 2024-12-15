@@ -76,5 +76,6 @@ jobs:
         #       echo "The branch name is ${{ github.ref_name }}"
         #       dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
+          ls -l ./output
           VERSION=${{ github.ref_name }}  # Extract version again if necessary
           dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
