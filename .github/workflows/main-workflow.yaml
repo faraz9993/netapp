@@ -82,4 +82,4 @@ jobs:
           ls -l ./output
           cd ./output
           mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-          dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          dotnet nuget push netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
