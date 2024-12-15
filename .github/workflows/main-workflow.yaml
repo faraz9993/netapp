@@ -39,7 +39,8 @@ jobs:
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
     
       - name: List contents of output directory
-        run: ls -l ./output 
+        run: |
+             ls -l ./output 
              cd ./output
              mv netapplication.1.0.0-$VERSION.nupkg netapplication.$VERSION.nupkg
 
