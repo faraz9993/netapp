@@ -33,16 +33,13 @@ jobs:
       - name: Pack the NuGet package
         run: |
           VERSION=${{ github.ref_name }}
-          VERSION=${VERSION#1.0.0-v}
-          echo "Using version: $VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
           dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output       
 
     #   - name: Publish the application for "dll"
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
     
       - name: List contents of output directory
-        run: ls -l ./output
+        run: ls -l ./output 
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref == 'refs/heads/dev' }}
