@@ -27,8 +27,13 @@ jobs:
       - name: Run the application
         run: dotnet run
 
-      - name: Pack the application for "nupkg"
-        run: dotnet pack netapplication.csproj --configuration Release --output ./output
+ #     - name: Pack the application for "nupkg"
+ #       run: dotnet pack netapplication.csproj --configuration Release --output ./output
+
+      - name: Pack the NuGet package
+        run: |
+          VERSION=${GITHUB_REF##*/}  # Extract version from tag (e.g., v1.0.0)
+          dotnet pack --configuration Release --version-suffix $VERSION          
 
     #   - name: Publish the application for "dll"
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
@@ -64,6 +69,11 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        # run: |
+        #       echo "The branch name is ${{ github.ref_name }}"
+        #       dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
-              echo "The branch name is ${{ github.ref_name }}"
-              dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          VERSION=${GITHUB_REF##*/}  # Extract version again if necessary
+          dotnet nuget push bin/Release/netstandard2.0/netapplication.$VERSION.nupkg \
+            --source "https://your-nexus-repo-url" \
+            --api-key ${{ secrets.NEXUS_API_KEY }}
