@@ -32,7 +32,7 @@ jobs:
 
       - name: Pack the NuGet package
         run: |
-          VERSION=${GITHUB_REF##*/}  # Extract version from tag (e.g., v1.0.0)
+          VERSION=${{ github.ref_name }}  # Extract version from tag (e.g., v1.0.0)
           dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output       
 
     #   - name: Publish the application for "dll"
@@ -73,5 +73,5 @@ jobs:
         #       echo "The branch name is ${{ github.ref_name }}"
         #       dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
-          VERSION=${GITHUB_REF##*/}  # Extract version again if necessary
+          VERSION=${{ github.ref_name }}  # Extract version again if necessary
           dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
