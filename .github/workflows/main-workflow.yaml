@@ -41,8 +41,7 @@ jobs:
       - name: List contents of output directory
         run: |
              ls -l ./output 
-             cd ./output
-             mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+             
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref == 'refs/heads/dev' }}
@@ -52,6 +51,9 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
+          cd ./output
+          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
+          ls -l ./output
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
       
       - name: Push to Nuget-rc Repository of Nexus
@@ -62,6 +64,9 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
         run: |
+          cd ./output
+          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
+          ls -l ./output
           dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
   
       - name: Push to Nuget-tag Repository of Nexus
@@ -74,6 +79,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
 
         run: |
+          cd ./output
+          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
           ls -l ./output
-          VERSION=${{ github.ref_name }}  # Extract version again if necessary
           dotnet nuget push ./output/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
