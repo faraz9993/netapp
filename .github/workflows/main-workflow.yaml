@@ -66,4 +66,4 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
               echo "The branch name is ${{ github.ref_name }}"
-              dotnet nuget push bin/Release/netstandard2.0/netapplication.$VERSION.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+              dotnet nuget push ./output/*.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
