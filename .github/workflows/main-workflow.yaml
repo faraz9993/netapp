@@ -33,7 +33,7 @@ jobs:
       - name: Pack the NuGet package
         run: |
           VERSION=${{ github.ref_name }}
-          dotnet pack netapplication.csproj --configuration Release --version $VERSION --output ./output       
+          dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output       
 
     #   - name: Publish the application for "dll"
     #     run: dotnet publish --configuration Release --output ./output --no-build --self-contained falset
