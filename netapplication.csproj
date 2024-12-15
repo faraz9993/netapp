@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
     <PackageId>netapplication</PackageId>
-    <Version>1.0.0</Version>
+    <Version></Version>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
