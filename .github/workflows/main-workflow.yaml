@@ -59,6 +59,9 @@ jobs:
             echo "The most recent commit is not from the main branch. Skipping deployment."
             exit 1
           fi
+          cd ./output
+          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
+          dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
           echo "The tag was pushed from the main branch."
 
       - name: Push to Nuget-snapshot Repository of Nexus
