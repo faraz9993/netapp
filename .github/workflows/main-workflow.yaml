@@ -45,11 +45,11 @@ jobs:
         id: check_commit
         run: |
           git fetch origin master
-            MASTER_COMMIT=$(git rev-parse origin/master)
+            MAIN_COMMIT=$(git rev-parse origin/main)
 
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
 
-            if [[ "$TAG_COMMIT" == "$MASTER_COMMIT" ]]; then
+            if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
             echo "The most recent commit is from the main branch. Skipping deployment."
             exit 1
           else
