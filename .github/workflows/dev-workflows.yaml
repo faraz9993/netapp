@@ -58,7 +58,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
           BRANCH_NAME=$(git branch --contains $(git rev-parse HEAD) | grep -Eo 'dev')
-          if [[ "${GITHUB_REF}" == refs/tags/* && $BRANCH_NAME!='dev' ]]; then
+          if [[ "${GITHUB_REF}" == refs/tags/* && $BRANCH_NAME !=' dev' ]]; then
             cd ./output
             mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
             dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
