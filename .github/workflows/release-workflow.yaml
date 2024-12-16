@@ -29,9 +29,6 @@ jobs:
       - name: Build the application
         run: dotnet build netapplication.csproj --configuration Release
 
-      # - name: Run the application
-      #   run: dotnet run
-
       - name: Pack the NuGet package
         run: |
           VERSION=${{ github.ref_name }}
@@ -62,8 +59,6 @@ jobs:
               exit 1
             fi
           fi
-
-          
           
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
