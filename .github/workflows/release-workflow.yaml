@@ -67,5 +67,4 @@ jobs:
         run: |
           cd ./output
           mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
-          SHORT_SHA=${{ github.sha }} | cut -c1-6
-          dotnet nuget push netapplication.${{ github.ref_name }}-${{ SHORT_SHA }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
