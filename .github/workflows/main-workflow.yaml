@@ -44,21 +44,21 @@ jobs:
       - name: Check if the most recent commit is from the main branch
         id: check_commit
         run: |
+          echo "Checking GITHUB_REF: $GITHUB_REF"
+          git config --global --add safe.directory /__w/git-nexus-task/git-nexus-task
+          FOLDER_NAME="helloworld"
+
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
-
-            git fetch origin main
+            git fetch --unshallow || true
             MAIN_COMMIT=$(git rev-parse origin/main)
-
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
 
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-              cd ./output
-              mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-              ls -l
-              dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+              export PACKAGE_ID="${FOLDER_NAME}-${TAG_NAME}"
+              export PACKAGE_VERSION="${TAG_NAME}"
             else
-              echo "Error: Tags must be created on the main branch."
+              echo "Error: Tags must be created on the main."
               exit 1
             fi
           fi
