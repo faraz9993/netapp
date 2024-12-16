@@ -49,27 +49,20 @@ jobs:
           echo "::set-output name=dev_commit_sha::$(git rev-parse origin/dev)"
           echo "::set-output name=release_commit_sha::$(git rev-parse origin/release)"
       
-      - name: Check if tag's commit is from the correct branch
-        id: check_tag_commit
+      - name: Check if the most recent commit is from the main branch
+        id: check_commit
         run: |
-          # Get the commit that the tag points to 
-          TAG_COMMIT_SHA=${{ github.event.head_commit.id }}
-          echo "Tag commit SHA: $TAG_COMMIT_SHA"
-          # Get the latest commits on main, dev, and release branches
-          MAIN_COMMIT_SHA=${{ steps.latest_commits.outputs.main_commit_sha }}
-          DEV_COMMIT_SHA=${{ steps.latest_commits.outputs.dev_commit_sha }}
-          RELEASE_COMMIT_SHA=${{ steps.latest_commits.outputs.release_commit_sha }}
-          echo "Latest commit on main: $MAIN_COMMIT_SHA"
-          echo "Latest commit on dev: $DEV_COMMIT_SHA"
-          echo "Latest commit on release: $RELEASE_COMMIT_SHA"
-  
-          # Check if the tag commit matches the latest commit on any of the branches
-          if [ "$TAG_COMMIT_SHA" != "$MAIN_COMMIT_SHA" ] && [ "$TAG_COMMIT_SHA" != "$DEV_COMMIT_SHA" ] && [ "$TAG_COMMIT_SHA" != "$RELEASE_COMMIT_SHA" ]; then
-            echo "The tag is not pushed from any of the main, dev, or release branches. Skipping deployment."
+          # Get the last 5 commits to check the most recent one
+          git log --oneline -n5
+          
+          # Check if the most recent commit is from the main branch
+          RECENT_COMMIT_BRANCH=$(git branch --contains $(git rev-parse HEAD) | grep -Eo 'main')
+          if [ "$RECENT_COMMIT_BRANCH" != "main" ]; then
+            echo "The most recent commit is not from the main branch. Skipping deployment."
             exit 1
-          fi
-          echo "The tag was pushed from a valid branch."
-
+          else
+            echo "The most recent commit is from the main branch. Proceeding with deployment."
+          f
       
 
       # - name: Push to Nuget-tag Repository of Nexus
