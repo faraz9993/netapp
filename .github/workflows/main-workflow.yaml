@@ -56,7 +56,7 @@ jobs:
               cd ./output
               mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
               ls -l
-              dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+              dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
