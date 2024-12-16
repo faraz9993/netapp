@@ -45,16 +45,21 @@ jobs:
         id: check_commit
         run: |
           # Get the last 5 commits to check the most recent one
+          echo "Fetching the last 5 commits..."
           git log --oneline -n5
           
-          # Check if the most recent commit is from the main branch
-          RECENT_COMMIT_BRANCH=$(git branch --contains $(git rev-parse HEAD) | grep -Eo 'main')
+          # Get the branch of the most recent commit (HEAD) and check if it's 'main'
+          RECENT_COMMIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo "The most recent commit is from the branch: $RECENT_COMMIT_BRANCH"
+          
           if [ "$RECENT_COMMIT_BRANCH" != "main" ]; then
             echo "The most recent commit is not from the main branch. Skipping deployment."
             exit 1
           else
             echo "The most recent commit is from the main branch. Proceeding with deployment."
-          if
+          fi
+           
+      
       
 
       # - name: Push to Nuget-tag Repository of Nexus      
