@@ -38,7 +38,7 @@ jobs:
         run: |
              ls -l ./output
 
-      - name: Push to Nuget-tag Repository of Nexus  
+      - name: Push to Nuget-tag Repository of Nexus    
         # if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name == 'main' }}
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
