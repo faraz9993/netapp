@@ -52,7 +52,7 @@ jobs:
           ls -l
           dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
-      - name: Push to Nuget-snapshot Repository of Nexus       
+      - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
