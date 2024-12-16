@@ -57,6 +57,10 @@ jobs:
             exit 1
           else
             echo "The most recent commit is from the main branch. Proceeding with deployment."
+            cd ./output
+            mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+            ls -l
+            dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
           fi
 
       # - name: Push to Nuget-tag Repository of Nexus      
