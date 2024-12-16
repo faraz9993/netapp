@@ -42,6 +42,9 @@ jobs:
              ls -l ./output
       
       - name: Check if the most recent commit is from the main branch
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         id: check_commit
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
