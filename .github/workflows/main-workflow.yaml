@@ -45,15 +45,18 @@ jobs:
         id: check_commit
         run: |
           git fetch origin main
-            MAIN_COMMIT=$(git rev-parse origin/main)
+          MAIN_COMMIT=$(git rev-parse origin/main)
+          TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
 
-            TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-
-            if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-            echo "The most recent commit is from the main branch. Skipping deployment."
+          if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
+            echo "The most recent commit is from the main branch. Proceeding with deployment."
+            cd ./output
+            mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+            ls -l
+            dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
             exit 1
           else
-            echo "The most recent commit is not from the main branch. Proceeding with deployment."
+            echo "The most recent commit is not from the main branch. Skipping deployment."
           fi
            
            
