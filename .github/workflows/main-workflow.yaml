@@ -44,20 +44,23 @@ jobs:
       - name: Check if the most recent commit is from the main branch
         id: check_commit
         run: |
-          # Get the last 5 commits to check the most recent one
+          # Fetch the last 5 commits to check the most recent one
           echo "Fetching the last 5 commits..."
           git log --oneline -n5
           
-          # Get the branch of the most recent commit (HEAD) and check if it's 'main'
-          RECENT_COMMIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "The most recent commit is from the branch: $RECENT_COMMIT_BRANCH"
-          
-          if [ "$RECENT_COMMIT_BRANCH" != "main" ]; then
+          # Get the latest commit hash
+          LATEST_COMMIT_HASH=$(git rev-parse HEAD)
+          echo "Latest commit hash: $LATEST_COMMIT_HASH"
+      
+          # Check if the most recent commit is from the main branch by comparing the merge base
+          BASE_COMMIT=$(git merge-base $LATEST_COMMIT_HASH main)
+          if [ "$LATEST_COMMIT_HASH" != "$BASE_COMMIT" ]; then
             echo "The most recent commit is not from the main branch. Skipping deployment."
             exit 1
           else
             echo "The most recent commit is from the main branch. Proceeding with deployment."
           fi
+           
            
       
       
