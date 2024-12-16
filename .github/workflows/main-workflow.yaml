@@ -1,4 +1,4 @@
-name: Main Workflow
+name: Dev Workflow
 
 on:
   push:
@@ -46,11 +46,20 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref == 'refs/heads/main' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        # run: |
+        #   cd ./output
+        #   mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+        #   ls -l
+        #   dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
         run: |
-          cd ./output
-          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-          ls -l
-          dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          TAG_COMMIT_SHA=${{ github.event.head_commit.id }}
+          echo "Tag commit SHA: $TAG_COMMIT_SHA"
+
+          if [ "$TAG_COMMIT_SHA" != "${{ steps.latest_main_commit.outputs.commit_sha }}" ]; then
+            echo "The most recent commit is not from the main branch. Skipping deployment."
+            exit 1
+          fi
+          echo "The tag was pushed from the main branch."
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref_name == 'dev' }}
