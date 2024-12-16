@@ -43,7 +43,7 @@ jobs:
 
       - name: Push to Nuget-tag Repository of Nexus
 #        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref == 'refs/heads/main' }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name == 'main' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         # run: |
