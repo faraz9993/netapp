@@ -40,39 +40,41 @@ jobs:
       - name: List contents of output directory
         run: |
              ls -l ./output
-      
-      - name: Check if the most recent commit is from the main branch and push to nuget-tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') }} && ${{ github.ref_name == 'main' }}
+
+      - name: Push to Nuget-tag Repository of Nexus 
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
-        id: check_commit
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
-            git fetch origin main
+            git fetch --unshallow || true
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
+
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               cd ./output
               mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
               ls -l
               dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
             else
-              echo "Error: Tags must be created on the main branch."
+              echo "Error: Tags must be created on the main."
               exit 1
             fi
           fi
 
-      - name: Push to Nuget-snapshot Repository of Nexus
+          
+          
+      - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
-          cd ./output
-          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
-          dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            cd ./output
+            mv netapplication.1.0.0.nupkg netapplication.dev-build.nupkg
+            dotnet nuget push netapplication.dev-build.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
       
-      - name: Pushing to Nuget-rc Repository of Nexus
+      - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
