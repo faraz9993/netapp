@@ -56,7 +56,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
         run: |
           cd ./output
-          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
+          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
   
       - name: Push to Nuget-tag Repository of Nexus
