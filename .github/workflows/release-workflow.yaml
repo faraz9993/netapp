@@ -60,7 +60,7 @@ jobs:
           mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
       
-      - name: Push to Nuget-rc Repository of Nexus
+      - name: Pushing to Nuget-rc Repository of Nexus
         if: ${{ github.ref_name == 'release' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
