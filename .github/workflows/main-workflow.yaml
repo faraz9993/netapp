@@ -40,29 +40,47 @@ jobs:
       - name: List contents of output directory
         run: |
              ls -l ./output
-
-      - name: Push to Nuget-tag Repository of Nexus
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-#        if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name == 'main' }}
-        env:
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
-        # run: |
-        #   cd ./output
-        #   mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-        #   ls -l
-        #   dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+      
+      - name: Get the latest commits from main, dev, and release branches
+        id: latest_commits
         run: |
+          git fetch origin main dev release 
+          echo "::set-output name=main_commit_sha::$(git rev-parse origin/main)"
+          echo "::set-output name=dev_commit_sha::$(git rev-parse origin/dev)"
+          echo "::set-output name=release_commit_sha::$(git rev-parse origin/release)"
+      
+      - name: Check if tag's commit is from the correct branch
+        id: check_tag_commit
+        run: |
+          # Get the commit that the tag points to 
           TAG_COMMIT_SHA=${{ github.event.head_commit.id }}
           echo "Tag commit SHA: $TAG_COMMIT_SHA"
-
-          if [ "$TAG_COMMIT_SHA" != "${{ steps.latest_main_commit.outputs.commit_sha }}" ]; then
-            echo "The most recent commit is not from the main branch. Skipping deployment."
+          # Get the latest commits on main, dev, and release branches
+          MAIN_COMMIT_SHA=${{ steps.latest_commits.outputs.main_commit_sha }}
+          DEV_COMMIT_SHA=${{ steps.latest_commits.outputs.dev_commit_sha }}
+          RELEASE_COMMIT_SHA=${{ steps.latest_commits.outputs.release_commit_sha }}
+          echo "Latest commit on main: $MAIN_COMMIT_SHA"
+          echo "Latest commit on dev: $DEV_COMMIT_SHA"
+          echo "Latest commit on release: $RELEASE_COMMIT_SHA"
+  
+          # Check if the tag commit matches the latest commit on any of the branches
+          if [ "$TAG_COMMIT_SHA" != "$MAIN_COMMIT_SHA" ] && [ "$TAG_COMMIT_SHA" != "$DEV_COMMIT_SHA" ] && [ "$TAG_COMMIT_SHA" != "$RELEASE_COMMIT_SHA" ]; then
+            echo "The tag is not pushed from any of the main, dev, or release branches. Skipping deployment."
             exit 1
           fi
-          cd ./output
-          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
-          dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
-          echo "The tag was pushed from the main branch."
+          echo "The tag was pushed from a valid branch."
+
+      
+
+      # - name: Push to Nuget-tag Repository of Nexus
+      #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      #   env:
+      #     NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+      #   run: |
+      #     cd ./output
+      #     mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+      #     ls -l
+      #     dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref_name == 'dev' }}
