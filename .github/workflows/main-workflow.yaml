@@ -52,7 +52,7 @@ jobs:
       - name: Check if tag's commit is from the correct branch
         id: check_tag_commit
         run: |
-          # Get the commit that the tag points to
+          # Get the commit that the tag points to 
           TAG_COMMIT_SHA=${{ github.event.head_commit.id }}
           echo "Tag commit SHA: $TAG_COMMIT_SHA"
           # Get the latest commits on main, dev, and release branches
