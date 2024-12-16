@@ -44,7 +44,7 @@ jobs:
       - name: Check if the most recent commit is from the main branch
         id: check_commit
         run: |
-          git fetch origin master
+          git fetch origin main
             MAIN_COMMIT=$(git rev-parse origin/main)
 
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
