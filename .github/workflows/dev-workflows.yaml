@@ -57,9 +57,15 @@ jobs:
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
-          cd ./output
-          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
-          dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          BRANCH_NAME = git branch --contains $(git rev-parse HEAD) | grep -Eo 'dev'
+          if [[ "${GITHUB_REF}" == refs/tags/* && $BRANCH_NAME!='dev' ]]; then
+            cd ./output
+            mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
+            dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          else
+            echo "It is a tag so skipping."
+          fi
+          
       
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
