@@ -52,20 +52,28 @@ jobs:
           ls -l
           dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
+      # - name: Push to Nuget-snapshot Repository of Nexus          
+      #   if: ${{ github.ref_name == 'dev' }}
+      #   env:
+      #     NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
+      #   run: |
+      #     BRANCH_HEAD=$(git branch --contains $(git rev-parse HEAD) | grep -Eo 'dev')
+      #     if [[ "${GITHUB_REF}" == refs/tags/* && $BRANCH_HEAD != 'dev' ]]; then
+      #       echo "It is a tag and head is dev so skipping."
+      #     else
+      #       cd ./output
+      #       mv netapplication.1.0.0.nupkg netapplication.dev-build.nupkg
+      #       dotnet nuget push netapplication.dev-build.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+      #     fi
+          
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
-          BRANCH_NAME=$(git branch --contains $(git rev-parse HEAD) | grep -Eo 'dev')
-          if [[ "${GITHUB_REF}" == refs/tags/* && $BRANCH_NAME !=' dev' ]]; then
             cd ./output
-            mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg
-            dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
-          else
-            echo "It is a tag so skipping."
-          fi
-          
+            mv netapplication.1.0.0.nupkg netapplication.dev-build.nupkg
+            dotnet nuget push netapplication.dev-build.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
       
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
