@@ -47,8 +47,6 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           echo "Checking GITHUB_REF: $GITHUB_REF"
-          git config --global --add safe.directory /__w/git-nexus-task/git-nexus-task
-          FOLDER_NAME="helloworld"
 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
