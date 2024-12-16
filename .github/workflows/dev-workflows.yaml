@@ -1,4 +1,4 @@
-name: Main Workflow
+name: release Workflow
 
 on:
   push:
@@ -39,7 +39,17 @@ jobs:
     
       - name: List contents of output directory
         run: |
-             ls -l ./output 
+             ls -l ./output
+
+      - name: Push to Nuget-tag Repository of Nexus
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        run: |
+          cd ./output
+          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+          ls -l
+          dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
       - name: Push to Nuget-snapshot Repository of Nexus
         if: ${{ github.ref_name == 'dev' }}
@@ -56,15 +66,5 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
         run: |
           cd ./output
-          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
+          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${{ github.sha }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
-  
-      - name: Push to Nuget-tag Repository of Nexus
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        env:
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
-        run: |
-          cd ./output
-          mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-          ls -l
-          dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
