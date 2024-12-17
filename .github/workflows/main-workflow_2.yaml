@@ -41,21 +41,21 @@ jobs:
             TAG_NAME="${GITHUB_REF#refs/tags/}"
                   
             git fetch origin main
-            MAIN_COMMIT=$(git rev-parse origin/master)
+            MAIN_COMMIT=$(git rev-parse origin/main)
                   
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
                   
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
             else
-              echo "Error: Tags must be created on the master branch."
+              echo "Error: Tags must be created on the main branch."
               exit 1
             fi
           elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
             dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
           elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
             dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
-          elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
           fi
           ls
