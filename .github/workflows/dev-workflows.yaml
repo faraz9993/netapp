@@ -71,6 +71,11 @@ jobs:
           name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
 
+      - name: where you are and what i sthere?
+        run: |
+          pwd
+          ls -la
+
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
