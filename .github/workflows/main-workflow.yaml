@@ -97,7 +97,7 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-            cd /home/runner/work/netapp/netapp
+            cd ./output
               mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
               ls -l
               dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
@@ -112,6 +112,7 @@ jobs:
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
+            cd ./output
             mv netapplication.1.0.0.nupkg netapplication.${{ github.job }}.nupkg
             dotnet nuget push netapplication.${{ github.job }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
              
@@ -122,5 +123,6 @@ jobs:
         run: |
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}  # Extract first 6 characters of commit SHA
+          cd ./output
           mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
