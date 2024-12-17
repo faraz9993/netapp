@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
       ARTIFACT_PATH: "./output"
 
     steps:
@@ -44,26 +41,13 @@ jobs:
         with:
           name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
-      
-
-      # - name: Manual approval for pushing to Nuget-tag Repository of Nexus
-      #   uses: trstringer/manual-approval@v1
-      #   with:
-      #     secret: ${{ secrets.GIHTUB_PAT }}
-      #     approvers: faraz9993
-      #     minimum-approvals: 1
-      #     issue-title: "Approve NuGet Tag Deployment"
-      #     issue-body: "Please approve or deny the deployment of the NuGet tag to Nexus repository."
-      #     exclude-workflow-initiator-as-approver: false
-      #     additional-approved-words: ''
-      #     additional-denied-words: ''
 
   push_to_nexus:
     name: Deploy to nexus
     needs: build
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') }} || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
-    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
+    environment: ${{ startsWith(github.ref, 'refs/tags/') || github.ref_name == 'main' && 'Approval' || null }}
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -78,18 +62,6 @@ jobs:
         with:
           name: nuget-package
           path: ./output
-
-      - name: where you are and what i sthere?
-        run: |
-          pwd
-          ls -la
-          echo "Job ID: ${{ github.job }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Run Number: ${{ github.run_number }}"
-          echo "SHA: ${{ github.sha }}"
-          echo "Ref: ${{ github.ref }}"
-          echo "Workflow Name: ${{ github.workflow }}"
-          echo "Actor: ${{ github.actor }}"
 
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
