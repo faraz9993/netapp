@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nuget-package
-          path: "."
+          path: /home/runner/work/netapp/netapp
 
       - name: where you are and what i sthere?
         run: |
