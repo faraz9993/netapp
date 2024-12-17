@@ -129,6 +129,7 @@ jobs:
     name: Deploy for code change
     needs: build
     runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
