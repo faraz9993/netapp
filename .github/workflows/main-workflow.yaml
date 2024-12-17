@@ -42,7 +42,7 @@ jobs:
       - name: Manual approval for pushing to Nuget-tag Repository of Nexus
         uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ secrets.GITHUB_PAT }}
+          secret: ${{ secrets.GIHTUB_PAT }}
           approvers: faraz9993
           minimum-approvals: 1
           issue-title: "Approve NuGet Tag Deployment"
