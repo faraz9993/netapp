@@ -126,7 +126,7 @@ jobs:
           fi
 
   push_for_code_change:
-    name: Push of code change
+    name: Push of code change 
     needs: build
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
