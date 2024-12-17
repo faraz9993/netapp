@@ -42,12 +42,12 @@ jobs:
           name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
 
-  push_to_nexus:
-    name: Deploy to nexus
+  push_for_tag:
+    name: Deploy for tag
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') }} || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
-    environment: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name != 'refs/tags/main' && 'Approval' || null }}
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -83,6 +83,26 @@ jobs:
               exit 1
             fi
           fi
+
+  push_for_code_change:
+    name: Deploy for code change
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'develop' || github.ref_name == 'release'
+    env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          path: ./output
 
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
