@@ -9,6 +9,9 @@ env:
     NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
     NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+    NEXUS_SOURCE_MAIN: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+    NEXUS_SOURCE_DEV: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
+    NEXUS_SOURCE_RELEASE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
     ARTIFACT_PATH: "./output"
 
 jobs:
@@ -81,29 +84,23 @@ jobs:
 
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        env:
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
             cd ./output
             mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
-            dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE_MAIN --api-key $NEXUS_API_KEY
 
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
-        env:
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
             cd ./output
             cp netapplication.1.0.0.nupkg netapplication.${{ github.run_id }}.nupkg
-            dotnet nuget push netapplication.${{ github.run_id }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            dotnet nuget push netapplication.${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
-        env:
-          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
         run: |
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6} 
           cd ./output
           cp netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
-          dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
