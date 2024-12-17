@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
       ARTIFACT_PATH: "./output"
 
     steps:
@@ -28,6 +31,8 @@ jobs:
         run: dotnet build netapplication.csproj --configuration Release
 
       - name: Pack the NuGet package
+        env:
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           VERSION=${{ github.ref_name }}
           pwd
@@ -35,25 +40,21 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
                   
-            git fetch origin master
-            MASTER_COMMIT=$(git rev-parse origin/master)
+            git fetch origin main
+            MAIN_COMMIT=$(git rev-parse origin/master)
                   
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
                   
-            if [[ "$TAG_COMMIT" == "$MASTER_COMMIT" ]]; then
-              export PACKAGE_ID="nexus-git-${TAG_NAME}"
-              export PACKAGE_VERSION="${TAG_NAME}"
+            if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
             else
               echo "Error: Tags must be created on the master branch."
               exit 1
             fi
           elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
-            export PACKAGE_ID="${FOLDER_NAME}.nexus-git"
-            export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
+            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
           elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-            COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
-            export PACKAGE_ID="nexus-git-1.0.0-release-${COMMIT_ID}"
-            export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
+            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
           elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
             exit 1
           fi
