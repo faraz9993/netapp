@@ -85,7 +85,7 @@ jobs:
 
   push_tag_from_main:
     name: Push of tag in main
-    needs: build
+    needs: push_tag_from_dev_or_release
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
