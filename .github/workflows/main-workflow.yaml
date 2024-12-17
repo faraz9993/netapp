@@ -53,7 +53,7 @@ jobs:
 
       - name: Manual approval before pushing to Nexus
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        environment: 
+        env: 
           name: Approval  # Make sure this matches the environment name in your GitHub repo settings
         run: echo "Waiting for approval before proceeding..."
 
