@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nuget-package
-          path: /home/runner/work/netapp/netapp
+          path: ./netapp
 
       - name: where you are and what i sthere?
         run: |
@@ -94,6 +94,7 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
+            cd /home/runner/work/netapp/netapp
               mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
               ls -l
               dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
@@ -102,6 +103,7 @@ jobs:
               exit 1
             fi
           fi
+
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
@@ -119,5 +121,3 @@ jobs:
           SHORT_SHA=${COMMIT_SHA:0:6}  # Extract first 6 characters of commit SHA
           mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
-          
-      
