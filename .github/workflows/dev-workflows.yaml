@@ -43,7 +43,7 @@ jobs:
           path: ${{ env.ARTIFACT_PATH }}
 
   push_tag_from_dev_or_release:
-    name: Deploy for tag
+    name: Push of tag in dev or release
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -84,7 +84,7 @@ jobs:
           fi
 
   push_tag_from_main:
-    name: Deploy for tag
+    name: Push of tag in main
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
@@ -126,7 +126,7 @@ jobs:
           fi
 
   push_for_code_change:
-    name: Deploy for code change
+    name: Push of code change
     needs: build
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
