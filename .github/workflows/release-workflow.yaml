@@ -13,7 +13,7 @@ jobs:
       ARTIFACT_PATH: "./output"
 
     steps:
-      - name: Checkout code
+      - name: Checkout code   
         uses: actions/checkout@v3
 
       - name: Set up .NET
@@ -42,12 +42,11 @@ jobs:
           name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
 
-  push_to_nexus:
-    name: Deploy to nexus
+  push_tag_from_dev_or_release:
+    name: Push of tag in dev or release
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') }} || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
-    environment: ${{ startsWith(github.ref, 'refs/tags/') || github.ref_name == 'main' && 'Approval' || null }}
+    if: startsWith(github.ref, 'refs/tags/')
     env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -75,7 +74,7 @@ jobs:
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
             cd ./output
-              mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+              cp netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
               ls -l
               dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
             else
@@ -84,13 +83,75 @@ jobs:
             fi
           fi
 
+  push_tag_from_main:
+    name: Push of tag in main
+    needs: push_tag_from_dev_or_release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
+    env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          path: ./output
+
+      - name: Push to Nuget-tag Repository of Nexus    
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            git fetch --unshallow || true
+            MAIN_COMMIT=$(git rev-parse origin/main)
+            TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
+            if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
+            cd ./output
+              cp netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
+              ls -l
+              dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+            else
+              echo "Error: Tags must be created on the main."
+              exit 1
+            fi
+          fi
+
+  push_for_code_change:
+    name: Push of code change 
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
+    env:
+      NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+      NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          path: ./output
+
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
         run: |
             cd ./output
-            mv netapplication.1.0.0.nupkg netapplication.${{ github.run_id }}.nupkg
+            cp netapplication.1.0.0.nupkg netapplication.${{ github.run_id }}.nupkg
             dotnet nuget push netapplication.${{ github.run_id }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus      
@@ -101,5 +162,5 @@ jobs:
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}  # Extract first 6 characters of commit SHA
           cd ./output
-          mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
+          cp netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
