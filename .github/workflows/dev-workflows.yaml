@@ -76,6 +76,12 @@ jobs:
           pwd
           ls -la
           echo "Job ID: ${{ github.job }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Run Number: ${{ github.run_number }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Workflow Name: ${{ github.workflow }}"
+          echo "Actor: ${{ github.actor }}"
 
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
