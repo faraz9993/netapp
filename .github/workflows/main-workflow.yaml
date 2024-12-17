@@ -65,7 +65,6 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') }} || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
     environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
     steps:
-
       - name: Download Package Artifact
         uses: actions/download-artifact@v3
         with:
