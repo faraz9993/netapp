@@ -44,7 +44,8 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output
+              mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg 
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
@@ -88,7 +89,6 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
             cd ./output
-            mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
             dotnet nuget push netapplication.${{ github.ref_name }}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
 
       - name: Push to Nuget-snapshot Repository of Nexus          
