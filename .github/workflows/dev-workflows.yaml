@@ -13,6 +13,7 @@ jobs:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+      ARTIFACT_PATH: "./output "
 
     steps:
       - name: Checkout code
@@ -38,8 +39,39 @@ jobs:
         run: |
              ls -l ./output
 
+      - name: Upload Package as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-package
+          path: ${{ env.ARTIFACT_PATH }}
+      
+
+      # - name: Manual approval for pushing to Nuget-tag Repository of Nexus
+      #   uses: trstringer/manual-approval@v1
+      #   with:
+      #     secret: ${{ secrets.GIHTUB_PAT }}
+      #     approvers: faraz9993
+      #     minimum-approvals: 1
+      #     issue-title: "Approve NuGet Tag Deployment"
+      #     issue-body: "Please approve or deny the deployment of the NuGet tag to Nexus repository."
+      #     exclude-workflow-initiator-as-approver: false
+      #     additional-approved-words: ''
+      #     additional-denied-words: ''
+
+  push_to_nexus:
+    name: Deploy to nexus
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }} || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
+    environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
+    steps:
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-package
+          path: ${{ env.ARTIFACT_PATH }}
+
       - name: Push to Nuget-tag Repository of Nexus    
-        # if: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name == 'main' }}
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
@@ -49,7 +81,6 @@ jobs:
             git fetch --unshallow || true
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               cd ./output
               mv netapplication.1.0.0-${{ github.ref_name }}.nupkg netapplication.${{ github.ref_name }}.nupkg
@@ -60,7 +91,6 @@ jobs:
               exit 1
             fi
           fi
-          
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         env:
@@ -69,7 +99,7 @@ jobs:
             cd ./output
             mv netapplication.1.0.0.nupkg netapplication.dev-build.nupkg
             dotnet nuget push netapplication.dev-build.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
-      
+             
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
         env:
@@ -80,3 +110,5 @@ jobs:
           SHORT_SHA=${COMMIT_SHA:0:6}  # Extract first 6 characters of commit SHA
           mv netapplication.1.0.0.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE --api-key $NEXUS_API_KEY
+          
+      
