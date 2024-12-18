@@ -122,8 +122,5 @@ jobs:
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6} 
           cd ./output
-          echo ${SHORT_SHA}
-          echo "123"
-          echo $SHORT_SHA
           mv netapplication.1.0.0-release.nupkg netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
