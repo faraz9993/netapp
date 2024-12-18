@@ -113,8 +113,7 @@ jobs:
         if: ${{ github.ref_name == 'dev' }}
         run: |
             cd ./output
-            ls -la
-            mv netapplication.1.0.0.nupkg netapplication.${{ github.run_id }}.nupkg
+            mv netapplication.1.0.0-dev.nupkg netapplication.${{ github.run_id }}.nupkg
             dotnet nuget push netapplication.${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus      
