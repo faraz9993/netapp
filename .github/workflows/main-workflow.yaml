@@ -85,6 +85,10 @@ jobs:
           qualityGate: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=faraz9993_netapp
+            -Dsonar.organization=faraz9993
     
       - name: Continue if Quality Gate passed
         if: success()
