@@ -125,4 +125,5 @@ jobs:
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6} 
           cd ./output
+          ls -la
           dotnet nuget push netapplication.${{ github.ref_name }}-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
