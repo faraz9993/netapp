@@ -9,7 +9,7 @@ env:
     NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
     NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
     NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-    NEXUS_SOURCE_MAIN: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
+    NEXUS_SOURCE_MAIN: ${{ secrets.NEXUS_SOURCE_MAIN }}
     NEXUS_SOURCE_DEV: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
     NEXUS_SOURCE_RELEASE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
     ARTIFACT_PATH: "./output"
