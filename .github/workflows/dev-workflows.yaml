@@ -21,7 +21,7 @@ jobs:
       - name: Checkout code    
         uses: actions/checkout@v3
 
-      - name: Set up .NET  
+      - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0'
@@ -62,11 +62,36 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nuget-package
-          path: ${{ env.ARTIFACT_PATH }}   
+          path: ${{ env.ARTIFACT_PATH }}
+  
+  SonarClouScan:
+    name: SonarCloud Scan
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Wait for SonarCloud Quality Gate
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          qualityGate: true
+          args: >
+            -Dsonar.projectKey=faraz9993_netapp
+            -Dsonar.organization=faraz9993
+    
+      - name: Continue if Quality Gate passed
+        if: success()
+        run: echo "SonarCloud Quality Gate passed, proceeding with the next steps."
+
+      - name: Fail if Quality Gate failed
+        if: failure()
+        run: echo "SonarCloud Quality Gate failed, exiting with status 1." && exit 1
+    
 
   push_to_nexus:
     name: Push to Nexus
-    needs: build
+    needs: [build, SonarClouScan]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/') || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
     environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
