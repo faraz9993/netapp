@@ -65,7 +65,7 @@ jobs:
           path: ${{ env.ARTIFACT_PATH }}
   
   SonarClouScan:
-    name: SpnarCloud Scan
+    name: SonarCloud Scan
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -78,6 +78,21 @@ jobs:
           args: >
             -Dsonar.projectKey=faraz9993_netapp
             -Dsonar.organization=faraz9993
+
+      - name: Fetch Quality Gate Status
+        id: check_quality_gate
+        run: |
+          echo "Fetching SonarCloud Quality Gate status..."
+          response=$(curl -s -X GET "https://sonarcloud.io/api/qualitygates/project_status?projectKey=faraz9993_netapp" \
+            -H "Authorization: Bearer ${{ secrets.SONAR_TOKEN }}")
+          status=$(echo $response | jq -r '.projectStatus.status')
+          echo "Quality Gate status: $status"
+          if [[ "$status" == "OK" ]]; then
+            echo "SonarCloud Quality Gate passed!"
+          else
+            echo "SonarCloud Quality Gate failed! Exiting with status 1."
+            exit 1
+          fi
 
   push_to_nexus:
     name: Push to Nexus
