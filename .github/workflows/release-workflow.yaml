@@ -1,4 +1,4 @@
-name: Release Workflow
+name: Dev Workflow
 
 on:
   push:
@@ -91,7 +91,6 @@ jobs:
         if: failure()
         run: echo "SonarCloud Quality Gate failed, exiting with status 1." && exit 1
     
-
   push_to_nexus:
     name: Push to Nexus
     needs: [build, SonarClouScan]
@@ -115,7 +114,7 @@ jobs:
         if: ${{ github.ref_name == 'dev' }}
         run: |
             cd ./output
-            dotnet nuget push nnetapplication.1.0.0.${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
+            dotnet nuget push netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
