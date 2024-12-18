@@ -121,5 +121,6 @@ jobs:
         if: ${{ github.ref_name == 'release' }}
         run: |
           COMMIT_SHA=${{ github.sha }}
-          SHORT_SHA=${COMMIT_SHA:0:6} 
+          SHORT_SHA=${COMMIT_SHA:0:6}
+          ls -la
           dotnet nuget push netapplication.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
