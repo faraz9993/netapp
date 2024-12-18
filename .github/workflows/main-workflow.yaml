@@ -81,11 +81,10 @@ jobs:
 
       - name: Wait for SonarCloud Quality Gate
         uses: sonarsource/sonarcloud-github-action@master
-        with:
-          qualityGate: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
+          qualityGate: true
           args: >
             -Dsonar.projectKey=faraz9993_netapp
             -Dsonar.organization=faraz9993
