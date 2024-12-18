@@ -36,9 +36,12 @@ jobs:
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
-          VERSION=${{ github.ref_name }}
-          pwd
-          ls
+          VERSION=${{ github.run_id }}
+          COMMIT_SHA=${{ github.sha }}
+          SHORT_SHA=${COMMIT_SHA:0:6}
+          echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
+          echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
+
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
             git fetch origin main
@@ -53,7 +56,7 @@ jobs:
           elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
             dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
           elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
+            dotnet pack netapplication.csproj --configuration Release --version-suffix $SHORT_SHA --output ./output 
           elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
           fi
