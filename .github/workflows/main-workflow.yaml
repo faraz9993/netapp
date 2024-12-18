@@ -70,9 +70,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: sonarsource/sonarcloud-github-action@v4.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectKey: faraz9993_netapp  
+          organization: faraz9993
 
   push_to_nexus:
     name: Push to Nexus
