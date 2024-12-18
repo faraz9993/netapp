@@ -74,8 +74,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectKey: faraz9993_netapp  
-          organization: faraz9993
+          args: >
+            -Dsonar.projectKey=faraz9993_netapp
+            -Dsonar.organization=faraz9993
 
   push_to_nexus:
     name: Push to Nexus
