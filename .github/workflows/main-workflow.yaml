@@ -49,7 +49,7 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-              dotnet pack netapplication.csproj --configuration Release --version-suffix $TAG_NAME --output ./output /p:CustomPackageId=$VERSION/$TAG_NAME
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $TAG_NAME --output ./output /p:CustomPackageId=netapplication/$TAG_NAME
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
