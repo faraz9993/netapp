@@ -39,7 +39,6 @@ jobs:
           VERSION=${{ github.run_id }}
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
-          echo "tag=netapplication-$VERSION" >> $GITHUB_ENV
           echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
           echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
           FOLDER_NAME="netapplication"
