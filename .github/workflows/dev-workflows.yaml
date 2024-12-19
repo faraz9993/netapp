@@ -109,7 +109,7 @@ jobs:
           echo "PACKAGE_ID: $PACKAGE_ID"
           echo "PACKAGE_VERSION: $PACKAGE_VERSION"
 
-      - name: Pack packages
+      - name: Pack packages  
         run: |
           dotnet pack netapplication.csproj --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIR }} \
             /p:CustomPackageId=$PACKAGE_ID \
