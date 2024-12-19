@@ -71,7 +71,7 @@ jobs:
       #     path: ${{ env.ARTIFACT_PATH }}
   
 
-      - name: Set package name and version
+      - name: Set package name and version  
         id: set_name
         shell: bash
         run: |
