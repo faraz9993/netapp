@@ -106,7 +106,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nuget-package
-          path: ./output/..nupkg
+          path: ${{ env.ARTIFACT_PATH }}
 
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
