@@ -68,7 +68,7 @@ jobs:
           path: ${{ env.ARTIFACT_PATH }}
   
   SonarClouScan:
-    name: SonarCloud Scan
+    name: SonarCloud Scan 
     needs: build
     runs-on: ubuntu-latest
     steps:
