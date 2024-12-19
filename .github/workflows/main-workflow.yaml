@@ -32,7 +32,7 @@ jobs:
       - name: Build the application
         run: dotnet build netapplication.csproj --configuration Release
 
-      - name: Pack the NuGet package  
+      - name: Pack the NuGet package    
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
