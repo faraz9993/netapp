@@ -118,7 +118,11 @@ jobs:
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
           echo "Packaging completed. Artifact path: $ARTIFACT_PATH"
 
-
+      - name: Upload Package as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-package
+          path: ${{ env.ARTIFACT_PATH }}
 
 
   SonarClouScan:
