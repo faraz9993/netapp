@@ -5,6 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>true</IsPackable>
+    <RootNamespace>$(tag)</RootNamespace>
     <PackageId>$(CustomPackageId)</PackageId>
     <Version>$(PackageVersion)</Version>
     <Nullable>enable</Nullable>
