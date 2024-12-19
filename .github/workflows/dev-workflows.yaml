@@ -92,7 +92,7 @@ jobs:
               echo "Error: Tags must be created on the main."
               exit 1
             fi
-          elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+          elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
             export PACKAGE_ID="${FOLDER_NAME}"
             export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
           elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
