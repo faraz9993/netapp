@@ -40,7 +40,7 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/}"
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
-          echo "CustomPackageId=/$FOLDER_NAME/$VERSION" >> $GITHUB_ENV 
+          echo "CustomPackageId=$FOLDER_NAME$VERSION" >> $GITHUB_ENV 
           echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
  
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
