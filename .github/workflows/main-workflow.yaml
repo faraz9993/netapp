@@ -42,6 +42,7 @@ jobs:
           echo "tag=netapplication-$VERSION" >> $GITHUB_ENV
           echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
           echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
+          FOLDER_NAME="netapplication"
 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
@@ -49,7 +50,8 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-              
+              export CustomPackageId="${FOLDER_NAME}-${TAG_NAME}"
+              export PackageVersion="${TAG_NAME}"
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:PackageVersion=$TAG_NAME
             else
               echo "Error: Tags must be created on the main branch."
