@@ -111,7 +111,7 @@ jobs:
 
       - name: Pack packages
         run: |
-          dotnet pack --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIR }} \
+          dotnet pack netapplication.csproj --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIR }} \
             /p:CustomPackageId=$PACKAGE_ID \
             /p:PackageVersion=$PACKAGE_VERSION
           ARTIFACT_PATH="${{ env.PACKAGE_OUTPUT_DIR }}/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
