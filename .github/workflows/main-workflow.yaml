@@ -12,7 +12,8 @@ env:
     NEXUS_SOURCE_MAIN: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
     NEXUS_SOURCE_DEV: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
     NEXUS_SOURCE_RELEASE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
-    ARTIFACT_PATH: ./output
+    ARTIFACT_PATH: ""
+    PACKAGE_OUTPUT_DIR: "./output"
 
 jobs:
   build:
@@ -50,6 +51,8 @@ jobs:
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:PackageVersion=$TAG_NAME
+              ARTIFACT_PATH="${{ env.PACKAGE_OUTPUT_DIR }}/${CustomPackageId}.${PackageVersion}.nupkg"
+              echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
