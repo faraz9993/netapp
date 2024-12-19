@@ -12,8 +12,7 @@ env:
     NEXUS_SOURCE_MAIN: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
     NEXUS_SOURCE_DEV: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-snapshot/
     NEXUS_SOURCE_RELEASE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-rc/
-    ARTIFACT_PATH: "./output/..nupkg"
-    PACKAGE_OUTPUT_DIR: "./output"
+    ARTIFACT_PATH: ./output
 
 jobs:
   build:
@@ -43,7 +42,7 @@ jobs:
           SHORT_SHA=${COMMIT_SHA:0:6}
           echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
           echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
-      
+ 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
             git fetch origin main
@@ -51,8 +50,6 @@ jobs:
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:PackageVersion=$TAG_NAME
-              ARTIFACT_PATH="./output/${VERSION}.${SHORT_SHA}.nupkg"  # Correct path for the artifact
-              echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
@@ -64,13 +61,12 @@ jobs:
           elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
           fi
-      
+
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: nuget-package
-          path: ${{ env.ARTIFACT_PATH }} 
-      
+          path: ${{ env.ARTIFACT_PATH }}
   
   SonarClouScan:
     name: SonarCloud Scan 
@@ -103,14 +99,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') || ${{ github.ref_name == 'dev' }} || ${{ github.ref_name == 'release' }}
     environment: ${{ startsWith(github.ref, 'refs/tags/') && 'Approval' || null }}
     steps:
-      - name: Download NuGet Package Artifact
+      - name: Download Package Artifact
         uses: actions/download-artifact@v3
         with:
           name: nuget-package
-          path: ./output
+          path: ${{ env.ARTIFACT_PATH }}
 
-
-      - name: Push to Nuget-tag Repository of Nexus      
+      - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls -la ./output/
