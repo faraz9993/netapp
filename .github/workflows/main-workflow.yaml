@@ -40,9 +40,8 @@ jobs:
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
           echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
-          echo "PackageVersion=netapp$VERSION/$SHORT_SHA" >> $GITHUB_ENV
-          FOLDER_NAME="netapplication"
-
+          echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
+ 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
             git fetch origin main
