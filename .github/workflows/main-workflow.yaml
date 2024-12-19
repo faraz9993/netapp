@@ -36,10 +36,11 @@ jobs:
         env:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
-          VERSION=${{ github.run_id }}
+          FOLDER_NAME="netapp"
+          VERSION="${GITHUB_REF#refs/tags/}"
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
-          echo "CustomPackageId=$VERSION" >> $GITHUB_ENV 
+          echo "CustomPackageId=$FOLDER_NAME/$VERSION" >> $GITHUB_ENV 
           echo "PackageVersion=$SHORT_SHA" >> $GITHUB_ENV
  
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
@@ -48,7 +49,7 @@ jobs:
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:PackageVersion=$TAG_NAME 
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $CustomPackageId --output ./output /p:PackageVersion=$TAG_NAME 
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
