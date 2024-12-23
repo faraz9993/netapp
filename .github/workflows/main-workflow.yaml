@@ -39,7 +39,6 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           FOLDER_NAME="netapp"
-          VERSION="${GITHUB_REF#refs/tags/}"
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
  
@@ -50,6 +49,7 @@ jobs:
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
             
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
+              VERSION=""
               export PACKAGE_ID="${FOLDER_NAME}-${TAG_NAME}"
               export PACKAGE_VERSION="${TAG_NAME}"              
               echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
