@@ -38,7 +38,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           FOLDER_NAME="netapp"
-          VERSION="${GITHUB_REF#refs/tags/}"
+          
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
  
@@ -60,12 +60,17 @@ jobs:
             fi
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
-          
+              VERSION=${{ github.run_id }}
+              export PACKAGE_VERSION="${TAG_NAME}"
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+              dotnet pack netapplication.csproj --configuration Release --output ./output /p:PackageVersion=$PACKAGE_VERSION
+
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-            export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
-            export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
+              export PACKAGE_VERSION="1.0.0-${SHORT_SHA}"
+              export PACKAGE_ID="${FOLDER_NAME}-1.0.0-${SHORT_SHA}"
+              echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+              dotnet pack netapplication.csproj --configuration Release --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
           elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
           fi
@@ -178,9 +183,11 @@ jobs:
         run: |
           dotnet nuget push ./output/netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
-      - name: Pushing to Nuget-rc Repository of Nexus      
+      - name: Pushing to Nuget-rc Repository of Nexus        
         if: ${{ github.ref_name == 'release' }}
         run: |
+          ls -la
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
-          dotnet nuget push ./output/netapplication.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
+          dotnet nuget push netapp-1.0.0-${SHORT_SHA}.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
+#          netapp-1.0.0-release-ad858b.1.0.0-release-ad858b.nupkg
