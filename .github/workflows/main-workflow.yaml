@@ -53,7 +53,7 @@ jobs:
               export PACKAGE_VERSION="${TAG_NAME}"              
               echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
               echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
+              dotnet pack netapplication.csproj --configuration Release --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
             else
               echo "Error: Tags must be created on the main branch."
               exit 1
