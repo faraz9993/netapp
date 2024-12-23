@@ -60,8 +60,6 @@ jobs:
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
               VERSION=${{ github.run_id }}
-              # export PACKAGE_VERSION="${TAG_NAME}"
-              # echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output
 
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
@@ -119,18 +117,16 @@ jobs:
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
-          ls -la 
           dotnet nuget push *.nupkg --source $NEXUS_SOURCE_MAIN --api-key $NEXUS_API_KEY
+          
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         run: |
-          ls -la
           dotnet nuget push netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus        
         if: ${{ github.ref_name == 'release' }}
         run: |
-          ls -la
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
           dotnet nuget push netapp-1.0.0-${SHORT_SHA}.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
