@@ -68,6 +68,8 @@ jobs:
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
               export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
               export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
+              echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
           elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
