@@ -47,8 +47,6 @@ jobs:
             git fetch origin main
             MAIN_COMMIT=$(git rev-parse origin/main)
             TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-            echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-            echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
             
             if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
               export PACKAGE_VERSION="${TAG_NAME}"
