@@ -186,6 +186,8 @@ jobs:
       - name: Pushing to Nuget-rc Repository of Nexus      
         if: ${{ github.ref_name == 'release' }}
         run: |
+          ls -la
+          ls -la ./output
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
           dotnet nuget push ./output/netapplication.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
