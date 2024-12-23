@@ -63,7 +63,7 @@ jobs:
               VERSION=${{ github.run_id }}
               # export PACKAGE_VERSION="${TAG_NAME}"
               # echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-              dotnet pack netapplication.csproj --configuration Release --output ./output
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output
 
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
               export PACKAGE_VERSION="1.0.0-${SHORT_SHA}"
