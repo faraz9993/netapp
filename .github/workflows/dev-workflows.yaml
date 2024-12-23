@@ -38,6 +38,7 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           FOLDER_NAME="netapp"
+          VERSION=${{ github.run_id }}
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
  
@@ -59,7 +60,6 @@ jobs:
             fi
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-              VERSION=${{ github.run_id }}
               export PACKAGE_VERSION="${TAG_NAME}"
               echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
               dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:PackageVersion=$PACKAGE_VERSION
