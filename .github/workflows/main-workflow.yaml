@@ -38,7 +38,6 @@ jobs:
           NEXUS_SOURCE: http://faraztest.southeastasia.cloudapp.azure.com:8081/repository/nuget-tag/
         run: |
           FOLDER_NAME="netapp"
-          
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
  
@@ -61,9 +60,9 @@ jobs:
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
               VERSION=${{ github.run_id }}
-              export PACKAGE_VERSION="${TAG_NAME}"
-              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-              dotnet pack netapplication.csproj --configuration Release --output ./output /p:PackageVersion=$PACKAGE_VERSION
+              # export PACKAGE_VERSION="${TAG_NAME}"
+              # echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output
 
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
               export PACKAGE_VERSION="1.0.0-${SHORT_SHA}"
@@ -80,61 +79,6 @@ jobs:
         with:
           name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
-  
-
-      # - name: Set package name and version
-      #   id: set_name
-      #   shell: bash
-      #   run: |
-      #     echo "Checking GITHUB_REF: $GITHUB_REF"
-      #     git config --global --add safe.directory /__w/git-nexus-task/git-nexus-task
-      #     FOLDER_NAME="helloworld"
-
-      #     if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-      #       TAG_NAME="${GITHUB_REF#refs/tags/}"
-      #       git fetch --unshallow || true
-      #       MAIN_COMMIT=$(git rev-parse origin/main)
-      #       TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-
-      #       if [[ "$TAG_COMMIT" == "$MAIN_COMMIT" ]]; then
-      #         export PACKAGE_ID="${FOLDER_NAME}-${TAG_NAME}"
-      #         export PACKAGE_VERSION="${TAG_NAME}"
-      #       else
-      #         echo "Error: Tags must be created on the main."
-      #         exit 1
-      #       fi
-      #     elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-      #       export PACKAGE_ID="${FOLDER_NAME}"
-      #       export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
-      #     elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-      #       COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
-      #       export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
-      #       export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-      #     else
-      #       echo "Error: Unsupported branch/tag for setting package name/version."
-      #       exit 1
-      #     fi
-
-      #     echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-      #     echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-      #     echo "PACKAGE_ID: $PACKAGE_ID"
-      #     echo "PACKAGE_VERSION: $PACKAGE_VERSION"
-
-      # - name: Pack packages
-      #   run: |
-      #     dotnet pack netapplication.csproj --no-restore --no-build --configuration Release --output ${{ env.PACKAGE_OUTPUT_DIR }} \
-      #       /p:CustomPackageId=$PACKAGE_ID \
-      #       /p:PackageVersion=$PACKAGE_VERSION
-      #     ARTIFACT_PATH="${{ env.PACKAGE_OUTPUT_DIR }}/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
-      #     echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
-      #     echo "Packaging completed. Artifact path: $ARTIFACT_PATH"
-
-      # - name: Upload Package as Artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: nuget-package
-      #     path: ${{ env.ARTIFACT_PATH }}
-
 
   SonarClouScan:
     name: SonarCloud Scan    
@@ -171,7 +115,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nuget-package
-          # path: ${{ env.ARTIFACT_PATH }}
 
       - name: Push to Nuget-tag Repository of Nexus    
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -181,7 +124,8 @@ jobs:
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         run: |
-          dotnet nuget push ./output/netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
+          ls -la
+          dotnet nuget push netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus        
         if: ${{ github.ref_name == 'release' }}
@@ -190,4 +134,3 @@ jobs:
           COMMIT_SHA=${{ github.sha }}
           SHORT_SHA=${COMMIT_SHA:0:6}
           dotnet nuget push netapp-1.0.0-${SHORT_SHA}.1.0.0-${SHORT_SHA}.nupkg --source $NEXUS_SOURCE_RELEASE --api-key $NEXUS_API_KEY
-#          netapp-1.0.0-release-ad858b.1.0.0-release-ad858b.nupkg
