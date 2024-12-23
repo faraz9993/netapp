@@ -60,7 +60,7 @@ jobs:
             fi
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
+              dotnet pack netapplication.csproj --configuration Release --output ./output 
           
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
               export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
