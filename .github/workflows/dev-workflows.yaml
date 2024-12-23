@@ -181,7 +181,8 @@ jobs:
       - name: Push to Nuget-snapshot Repository of Nexus          
         if: ${{ github.ref_name == 'dev' }}
         run: |
-          dotnet nuget push ./output/netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
+          ls -la
+          dotnet nuget push netapplication.1.0.0-${{ github.run_id }}.nupkg --source $NEXUS_SOURCE_DEV --api-key $NEXUS_API_KEY
              
       - name: Pushing to Nuget-rc Repository of Nexus        
         if: ${{ github.ref_name == 'release' }}
