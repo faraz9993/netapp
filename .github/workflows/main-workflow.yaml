@@ -52,7 +52,7 @@ jobs:
               export PACKAGE_ID="${FOLDER_NAME}-${TAG_NAME}"              
               echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
               echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-              dotnet pack netapplication.csproj --configuration Release --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=""
+              dotnet pack netapplication.csproj --configuration Release --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
             else
               echo "Tag can be created only from the main branch."
               exit 1
