@@ -60,12 +60,12 @@ jobs:
             fi
          
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output 
           
             elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-            export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
-            export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-            dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
+              export PACKAGE_ID="${FOLDER_NAME}-1.0.0-release-${COMMIT_ID}"
+              export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
+              dotnet pack netapplication.csproj --configuration Release --version-suffix $VERSION --output ./output /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
           elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
             exit 1
           fi
