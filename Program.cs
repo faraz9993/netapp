@@ -1,8 +1,26 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace HelloWeb
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
 
-var app = builder.Build();
-app.Urls.Add("https://farazwebapp-ebepfvhagvehhkb3.canadacentral-01.azurewebsites.net/");
-app.MapGet("/", () => Results.Ok("Hello World!"));
-app.Run();
+            var config = new ConfigurationBuilder()
+                          .AddCommandLine(args)
+                          .Build();
+            var host = new WebHostBuilder()
+                        .UseKestrel()
+                        .UseConfiguration(config)
+                        .UseContentRoot(Directory.GetCurrentDirectory())
+                        .UseIISIntegration()
+                        .UseStartup<Startup>()
+                        .Build();
+
+            host.Run();
+        }
+    }
+}

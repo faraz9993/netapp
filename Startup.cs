@@ -1,40 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
-public class Startup
+namespace HelloWeb
 {
-    public Startup(IConfiguration configuration)
+    public class Startup
     {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Add services to the container.
-        services.AddControllers();
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
+        public void Configure(IApplicationBuilder app)
         {
-            app.UseDeveloperExceptionPage();
+            app.Run(context =>
+            {
+                return context.Response.WriteAsync("Hello World!");
+            });
         }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-        }
-
-        app.UseRouting();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers(); // For web API controllers
-        });
     }
 }
