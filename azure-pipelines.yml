@@ -1,0 +1,75 @@
+stages:
+
+- stage: __default
+
+  jobs:
+
+  - job: Job
+
+    pool:
+
+      name: 'Default'
+
+    steps:
+
+    - task: UseDotNet@2
+
+      displayName: 'Use DotNet 8'
+
+      inputs:
+
+        packageType: 'sdk'
+
+        version: '8.0.404'
+
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+    - task: DotNetCoreCLI@2
+
+      displayName: 'Dotnet build Release'
+
+      inputs:
+
+        command: 'build'
+
+        projects: '**/netapplication.csproj'
+
+        arguments: '--configuration Release'
+
+    - task: DotNetCoreCLI@2
+
+      displayName: 'Restore dotnet tools'
+
+      inputs:
+
+        command: custom
+
+        custom: tool
+
+        arguments: restore
+
+    - task: DotNetCoreCLI@2
+
+      displayName: 'Dotnet publish'
+
+      inputs:
+
+        command: publish
+
+        publishWebProjects: false
+
+        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+
+        zipAfterPublish: true
+
+        projects: '**/netapplication.csproj'
+
+    - task: PublishBuildArtifacts@1
+
+      displayName: "Publish Artifacts"
+
+      inputs:
+
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+
+        artifactName: 'netapplication'
