@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace YourProject.Controllers  // Make sure this matches the namespace of your project
+namespace DotNet_Pipeline.Controllers  // Make sure this matches the namespace of your project
 {
     [Route("api/[controller]")]
     [ApiController]
